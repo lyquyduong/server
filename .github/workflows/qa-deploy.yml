@@ -227,14 +227,6 @@ jobs:
       - name: Stop staging slot
         run: az webapp stop --name ${{ steps.retrieve-secrets.outputs.identity-webapp-name }} --resource-group bitwarden-qa --slot staging
 
-      - name: Start staging slot
-        run: az webapp start --name $IDENTITY_WEBAPP_NAME --resource-group bitwarden-qa --slot staging
-
-        run: az webapp deployment slot swap -g bitwarden-qa -n $IDENTITY_WEBAPP_NAME --slot staging --target-slot production
-
-      - name: Stop staging slot
-        run: az webapp stop --name $IDENTITY_WEBAPP_NAME --resource-group bitwarden-qa --slot staging
-
 
   swap-slots:
     runs-on: ubuntu-latest
