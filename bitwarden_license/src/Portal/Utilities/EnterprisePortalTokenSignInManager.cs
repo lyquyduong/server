@@ -14,7 +14,7 @@ namespace Bit.Portal.Utilities
     {
         public const string TokenSignInPurpose = "EnterprisePortalTokenSignIn";
         
-        private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly IDataProtector _dataProtector;
 
         public EnterprisePortalTokenSignInManager(
             UserManager<User> userManager,
@@ -27,7 +27,7 @@ namespace Bit.Portal.Utilities
             IDataProtectionProvider dataProtectionProvider)
             : base(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
         {
-            _dataProtectionProvider = dataProtectionProvider;
+            _dataProtector = dataProtectionProvider.CreateProtector(TokenSignInPurpose);
         }
 
         public async Task<SignInResult> TokenSignInAsync(User user, string token, bool isPersistent)
@@ -65,14 +65,17 @@ namespace Bit.Portal.Utilities
             {
                 return error;
             }
+            // CfDJ8DRbSGPbyppMqeryzDEiQtvpaJ5m3Y9YHufqaOJ7JAdZpsLWXW+iJqKH4kuv522tbxipy9rzkwStV6qxXeWurYgoO/lSLjZImpjN3xBT6ITvOOOptUAOUQGBCLkDQqewRflGzKmqDZdrxcqusTkypLomM8w0Bxylfx2+O79dk3eprhder86Cul3ah5tA+p3oSmCCZjYZ4Kg0HHbGC/Z7zPdZxmtlA55nLGPKfTnOhQWoC6K6TVzNwuY3HCiUaTgQ1A==
 
             Logger.LogInformation("CheckTokenSignInAsync: token='{token}', user='{userId}'",
                 token, await UserManager.GetUserIdAsync(user));
-            var unprotectedToken = _dataProtectionProvider
-                .CreateProtector(TokenSignInPurpose)
-                .Unprotect(token);
+
+
+            var unprotectedToken = _dataProtector.Unprotect(token);
             Logger.LogInformation("CheckTokenSignInAsync: token='{token}', user='{userId}', unprotectedToken='{unprotectedToken}'",
                 token, await UserManager.GetUserIdAsync(user), unprotectedToken);
+
+
             if (await UserManager.VerifyUserTokenAsync(user, Options.Tokens.PasswordResetTokenProvider,
                 TokenSignInPurpose, token))
             {
