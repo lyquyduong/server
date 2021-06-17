@@ -98,7 +98,7 @@ namespace Bit.Portal.Utilities
                     }
                     else
                     {
-                        Logger.LogInformation("CheckTokenSignInAsync(7): securityStamp='{stamp}'", stamp);
+                        Logger.LogInformation("CheckTokenSignInAsync(7): securityStamp='{stamp}', actualStamp='{SecurityStamp}'", stamp, await UserManager.GetSecurityStampAsync(user));
                     }
                 }
                 Logger.LogInformation("CheckTokenSignInAsync(8): token='{token}', user='{userId}', unprotectedToken='{unprotectedToken}'",
