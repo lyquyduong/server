@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Bit.Core.Models.Table;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,8 @@ namespace Bit.Portal.Utilities
     public class EnterprisePortalTokenSignInManager : SignInManager<User>
     {
         public const string TokenSignInPurpose = "EnterprisePortalTokenSignIn";
+        
+        private readonly IDataProtectionProvider _dataProtectionProvider;
 
         public EnterprisePortalTokenSignInManager(
             UserManager<User> userManager,
@@ -20,9 +23,12 @@ namespace Bit.Portal.Utilities
             IOptions<IdentityOptions> optionsAccessor,
             ILogger<SignInManager<User>> logger,
             IAuthenticationSchemeProvider schemes,
-            IUserConfirmation<User> confirmation)
+            IUserConfirmation<User> confirmation,
+            IDataProtectionProvider dataProtectionProvider)
             : base(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
-        { }
+        {
+            _dataProtectionProvider = dataProtectionProvider;
+        }
 
         public async Task<SignInResult> TokenSignInAsync(User user, string token, bool isPersistent)
         {
@@ -60,6 +66,13 @@ namespace Bit.Portal.Utilities
                 return error;
             }
 
+            Logger.LogInformation("CheckTokenSignInAsync: token='{token}', user='{userId}'",
+                token, await UserManager.GetUserIdAsync(user));
+            var unprotectedToken = _dataProtectionProvider
+                .CreateProtector(TokenSignInPurpose)
+                .Unprotect(token);
+            Logger.LogInformation("CheckTokenSignInAsync: token='{token}', user='{userId}', unprotectedToken='{unprotectedToken}'",
+                token, await UserManager.GetUserIdAsync(user), unprotectedToken);
             if (await UserManager.VerifyUserTokenAsync(user, Options.Tokens.PasswordResetTokenProvider,
                 TokenSignInPurpose, token))
             {
