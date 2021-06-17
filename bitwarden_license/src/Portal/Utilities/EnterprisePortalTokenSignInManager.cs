@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Bit.Core.Models.Table;
 using Microsoft.AspNetCore.Authentication;
@@ -27,7 +29,7 @@ namespace Bit.Portal.Utilities
             IDataProtectionProvider dataProtectionProvider)
             : base(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
         {
-            _dataProtector = dataProtectionProvider.CreateProtector(TokenSignInPurpose);
+            _dataProtector = dataProtectionProvider.CreateProtector("DataProtectorTokenProvider");
         }
 
         public async Task<SignInResult> TokenSignInAsync(User user, string token, bool isPersistent)
@@ -65,16 +67,20 @@ namespace Bit.Portal.Utilities
             {
                 return error;
             }
-            // CfDJ8DRbSGPbyppMqeryzDEiQtvpaJ5m3Y9YHufqaOJ7JAdZpsLWXW+iJqKH4kuv522tbxipy9rzkwStV6qxXeWurYgoO/lSLjZImpjN3xBT6ITvOOOptUAOUQGBCLkDQqewRflGzKmqDZdrxcqusTkypLomM8w0Bxylfx2+O79dk3eprhder86Cul3ah5tA+p3oSmCCZjYZ4Kg0HHbGC/Z7zPdZxmtlA55nLGPKfTnOhQWoC6K6TVzNwuY3HCiUaTgQ1A==
-
-            Logger.LogInformation("CheckTokenSignInAsync: token='{token}', user='{userId}'",
-                token, await UserManager.GetUserIdAsync(user));
-
-/*
-            var unprotectedToken = _dataProtector.Unprotect(token);
-            Logger.LogInformation("CheckTokenSignInAsync: token='{token}', user='{userId}', unprotectedToken='{unprotectedToken}'",
-                token, await UserManager.GetUserIdAsync(user), unprotectedToken);
-*/
+            
+            try
+            {
+                Logger.LogInformation("CheckTokenSignInAsync: token='{token}', user='{userId}'",
+                    token, await UserManager.GetUserIdAsync(user));
+                var unprotectedData = _dataProtector.Unprotect(Convert.FromBase64String(token));
+                var unprotectedToken = Encoding.UTF8.GetString(unprotectedData);
+                Logger.LogInformation("CheckTokenSignInAsync: token='{token}', user='{userId}', unprotectedToken='{unprotectedToken}'",
+                    token, await UserManager.GetUserIdAsync(user), unprotectedToken);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "CheckTokenSignInAsync: token='{token}', user='{userId}', error='{Message}'", token, await UserManager.GetUserIdAsync(user), ex.Message);
+            }
 
             if (await UserManager.VerifyUserTokenAsync(user, Options.Tokens.PasswordResetTokenProvider,
                 TokenSignInPurpose, token))
