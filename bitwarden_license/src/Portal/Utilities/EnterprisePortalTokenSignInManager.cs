@@ -29,9 +29,7 @@ namespace Bit.Portal.Utilities
             IDataProtectionProvider dataProtectionProvider)
             : base(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
         {
-            _dataProtector = dataProtectionProvider
-                .CreateProtector("DataProtectorTokenProvider")
-                .CreateProtector(TokenSignInPurpose);
+            _dataProtector = dataProtectionProvider.CreateProtector("DataProtectorTokenProvider");
         }
 
         public async Task<SignInResult> TokenSignInAsync(User user, string token, bool isPersistent)
