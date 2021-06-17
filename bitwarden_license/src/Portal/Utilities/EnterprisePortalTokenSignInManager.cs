@@ -70,11 +70,11 @@ namespace Bit.Portal.Utilities
             Logger.LogInformation("CheckTokenSignInAsync: token='{token}', user='{userId}'",
                 token, await UserManager.GetUserIdAsync(user));
 
-
+/*
             var unprotectedToken = _dataProtector.Unprotect(token);
             Logger.LogInformation("CheckTokenSignInAsync: token='{token}', user='{userId}', unprotectedToken='{unprotectedToken}'",
                 token, await UserManager.GetUserIdAsync(user), unprotectedToken);
-
+*/
 
             if (await UserManager.VerifyUserTokenAsync(user, Options.Tokens.PasswordResetTokenProvider,
                 TokenSignInPurpose, token))
