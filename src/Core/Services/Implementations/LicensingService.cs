@@ -46,6 +46,10 @@ namespace Bit.Core.Services
             _logger = logger;
             _globalSettings = globalSettings;
 
+            logger.LogInformation("CERT: Env={environment}, SelfHosted={SelfHosted}",
+                environment.IsDevelopment() ? "Development" : "Production",
+                _globalSettings.SelfHosted ? "Self-Hosted" : "Cloud");
+
             var certThumbprint = environment.IsDevelopment() && !_globalSettings.SelfHosted ?
                 "207E64A231E8AA32AAF68A61037C075EBEBD553F" :
                 "‎B34876439FCDA2846505B2EFBBA6C4A951313EBE";
@@ -53,6 +57,7 @@ namespace Bit.Core.Services
             {
                 _certificate = CoreHelpers.GetEmbeddedCertificateAsync("licensing.cer", null)
                     .GetAwaiter().GetResult();
+                logger.LogInformation("CERT: Went self-hosted route");
             }
             else if (CoreHelpers.SettingHasValue(_globalSettings.Storage?.ConnectionString) &&
                 CoreHelpers.SettingHasValue(_globalSettings.LicenseCertificatePassword))
@@ -61,11 +66,16 @@ namespace Bit.Core.Services
                 _certificate = CoreHelpers.GetBlobCertificateAsync(storageAccount, "certificates",
                     "licensing.pfx", _globalSettings.LicenseCertificatePassword)
                     .GetAwaiter().GetResult();
+                logger.LogInformation("CERT: Went Azure Storage route");
             }
             else
             {
                 _certificate = CoreHelpers.GetCertificate(certThumbprint);
+                logger.LogInformation("CERT: Went local key-store search route");
             }
+
+            logger.LogInformation("CERT: Thumbprint={Thumbprint}",
+                _certificate?.Thumbprint);
 
             if (_certificate == null || !_certificate.Thumbprint.Equals(CoreHelpers.CleanCertificateThumbprint(certThumbprint),
                 StringComparison.InvariantCultureIgnoreCase))
