@@ -11,15 +11,21 @@ echo ".NET Core version $(dotnet --version)"
 echo "Restore"
 dotnet restore "$DIR/Portal.csproj"
 echo "Clean"
-dotnet clean "$DIR/Portal.csproj" -c "Release" -o "$DIR/obj/Docker/publish"
+dotnet clean "$DIR/Portal.csproj" -c "Release" -o "$DIR/obj/build-output/publish"
 echo "Node Build"
 cd "$DIR"
 npm install
 cd "$CUR_DIR"
 gulp --gulpfile "$DIR/gulpfile.js" build
 echo "Publish"
-dotnet publish "$DIR/Portal.csproj" -c "Release" -o "$DIR/obj/Docker/publish"
+dotnet publish "$DIR/Portal.csproj" -c "Release" -o "$DIR/obj/build-output/publish"
 
-echo -e "\nBuilding docker image"
-docker --version
-docker build -t bitwarden/portal "$DIR/."
+cd obj/build-output/publish
+zip -r Portal.zip .
+mv Portal.zip ../../../
+
+if [[ "$1" != "nodocker" ]]; then
+    echo -e "\nBuilding docker image"
+    docker --version
+    docker build -t bitwarden/portal "$DIR/."
+fi
