@@ -101,12 +101,12 @@ namespace Bit.Portal.Utilities
                         Logger.LogInformation("CheckTokenSignInAsync(7): securityStamp='{stamp}'", stamp);
                     }
                 }
-                Logger.LogInformation("CheckTokenSignInAsync: token='{token}', user='{userId}', unprotectedToken='{unprotectedToken}'",
+                Logger.LogInformation("CheckTokenSignInAsync(8): token='{token}', user='{userId}', unprotectedToken='{unprotectedToken}'",
                     token, userId, unprotectedToken);
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "CheckTokenSignInAsync: token='{token}', user='{userId}', error='{Message}'", token, userId, ex.Message);
+                Logger.LogError(ex, "CheckTokenSignInAsync(9): token='{token}', user='{userId}', error='{Message}'", token, userId, ex.Message);
             }
 
             if (await UserManager.VerifyUserTokenAsync(user, Options.Tokens.PasswordResetTokenProvider,
