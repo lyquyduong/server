@@ -91,6 +91,11 @@ namespace Bit.Portal
                 app.UsePathBase("/portal");
                 app.UseForwardedHeaders(globalSettings);
             }
+            else
+            {
+                // HACK: DEBUG: Only added to test out my theory
+                app.UsePathBase("/portal");
+            }
 
             if (env.IsDevelopment())
             {
