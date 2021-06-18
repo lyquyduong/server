@@ -115,6 +115,10 @@ namespace Bit.Sso
                 app.UsePathBase("/sso");
                 app.UseForwardedHeaders(globalSettings);
             }
+            else
+            { 
+                app.UsePathBase("/sso");
+            }
 
             if (env.IsDevelopment())
             {
