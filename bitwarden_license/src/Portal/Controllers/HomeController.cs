@@ -40,7 +40,6 @@ namespace Bit.Portal.Controllers
                 _logger.LogInformation("DebugPortal(6) - HomeController: Index - Returning 404");
                 return NotFound();
             }
-                _logger.LogInformation("DebugPortal(7) - HomeController: Index - Done");
         }
 
         [HttpGet("~/alive")]

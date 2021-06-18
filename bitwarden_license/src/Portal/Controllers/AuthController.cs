@@ -22,6 +22,9 @@ namespace Bit.Portal.Controllers
         [HttpGet("~/login")]
         public async Task<IActionResult> Index(string userId, string token, string organizationId, string returnUrl)
         {
+            _logger.LogInformation("Request: PathBase={PathBase}, Path={Path}, Host={Host}, Method={Method}",
+                Request.PathBase, Request.Path, Request.Host, Request.Method);
+
             var result = await _signInManager.TokenSignInAsync(userId, token, false);
             if (!result.Succeeded)
             {
