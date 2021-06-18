@@ -117,6 +117,9 @@ namespace Bit.Portal
 
             // Log startup
             logger.LogInformation(Constants.BypassFiltersEventId, globalSettings.ProjectName + " started.");
+
+            logger.LogInformation("STARTUP - ContentRootPath={ContentRootPath}, WebRootPath={WebRootPath}",
+                env.ContentRootPath, env.WebRootPath);
         }
     }
 }
