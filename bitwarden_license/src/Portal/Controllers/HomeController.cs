@@ -29,14 +29,18 @@ namespace Bit.Portal.Controllers
 
         public IActionResult Index()
         {
+            _logger.LogInformation("DebugPortal(4) - HomeController: Index - userIsSignedIn={0}", _signInManager.IsSignedIn(User));
             if(_signInManager.IsSignedIn(User))
             {
+                _logger.LogInformation("DebugPortal(5) - HomeController: Index - returning View");
                 return View();
             }
             else
             {
+                _logger.LogInformation("DebugPortal(6) - HomeController: Index - Returning 404");
                 return NotFound();
             }
+                _logger.LogInformation("DebugPortal(7) - HomeController: Index - Done");
         }
 
         [HttpGet("~/alive")]
