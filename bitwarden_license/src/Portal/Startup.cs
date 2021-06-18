@@ -86,16 +86,8 @@ namespace Bit.Portal
         {
             app.UseSerilog(env, appLifetime, globalSettings);
 
-            if (globalSettings.SelfHosted)
-            {
-                app.UsePathBase("/portal");
-                app.UseForwardedHeaders(globalSettings);
-            }
-            else
-            {
-                // HACK: DEBUG: Only added to test out my theory
-                app.UsePathBase("/portal");
-            }
+            app.UsePathBase("/portal");
+            app.UseForwardedHeaders(globalSettings);
 
             if (env.IsDevelopment())
             {

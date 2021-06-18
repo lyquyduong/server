@@ -110,15 +110,8 @@ namespace Bit.Sso
                 });
             }
 
-            if (globalSettings.SelfHosted)
-            {
-                app.UsePathBase("/sso");
-                app.UseForwardedHeaders(globalSettings);
-            }
-            else
-            { 
-                app.UsePathBase("/sso");
-            }
+            app.UsePathBase("/sso");
+            app.UseForwardedHeaders(globalSettings);
 
             if (env.IsDevelopment())
             {
