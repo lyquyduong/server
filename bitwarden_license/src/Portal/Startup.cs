@@ -48,13 +48,12 @@ namespace Bit.Portal
 
             // Identity
             services.AddEnterprisePortalTokenIdentityServices();
-            if (globalSettings.SelfHosted)
+
+            // HACK: Always set this cookie path
+            services.ConfigureApplicationCookie(options =>
             {
-                services.ConfigureApplicationCookie(options =>
-                {
-                    options.Cookie.Path = "/portal";
-                });
-            }
+                options.Cookie.Path = "/portal";
+            });
 
             // Services
             services.AddBaseServices();
@@ -86,6 +85,7 @@ namespace Bit.Portal
         {
             app.UseSerilog(env, appLifetime, globalSettings);
 
+            // HACK: Always set path base
             app.UsePathBase("/portal");
             app.UseForwardedHeaders(globalSettings);
 
