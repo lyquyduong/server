@@ -42,7 +42,6 @@ namespace Bit.Portal.Controllers
             _logger.LogInformation("DebugPortal(1) - AuthController: returnUrl={0}", returnUrl);
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
-                
                 _logger.LogInformation("DebugPortal(2) - AuthController: local redirect - returnUrl={0}", returnUrl);
                 return Redirect(returnUrl);
             }
